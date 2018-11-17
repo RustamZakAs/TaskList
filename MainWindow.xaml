@@ -5,8 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TaskList"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="300">
-
+        Title="MainWindow" Height="450" Width="300" Name="mainWindow">
     <Grid ShowGridLines="False">
         <Grid.ColumnDefinitions>
             <ColumnDefinition></ColumnDefinition>
@@ -84,11 +83,11 @@
                 <DataTemplate>
                     <DockPanel VerticalAlignment="Stretch" HorizontalAlignment="Right">
                         <Rectangle Width="10" Fill="Green"></Rectangle>
-                        <TextBox FontSize="{Binding SizeTop}" 
+                        <TextBox FontSize="{Binding ElementName=mainWindow, Path=SizeTop}" 
                              Width="150" 
                              HorizontalAlignment="Stretch" 
                              Text="{Binding TaskText}"></TextBox>
-                        <Button FontSize="{Binding SizeTop}" 
+                        <Button 
                             Width="50" 
                             HorizontalAlignment="Right" 
                             Click="ItemDoneClick">Done</Button>
@@ -107,3 +106,4 @@
 </Window>
 
 <!--,UpdateSourceTrigger=PropertyChanged-->
+<!--FontSize="{Binding ElementName=mainWindow, Path=SizeTop}"-->

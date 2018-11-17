@@ -58,13 +58,11 @@ namespace TaskList
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
 
-        private int sizeTop = 10;
+        private int sizeTop = 11;
         public int SizeTop { get => sizeTop; set => Set(ref sizeTop, value); }
 
         private ObservableCollection<Tasks> tasksList = new ObservableCollection<Tasks>();
         public ObservableCollection<Tasks> OCTasksList { get => tasksList; set => Set(ref tasksList, value); }
-
-        //public ObservableCollection<Tasks> OCTasksList { get; set; }// = new ObservableCollection<Tasks>();
 
         public MainWindow()
         {
@@ -78,7 +76,6 @@ namespace TaskList
             tasks.TaskStart = DateTime.Now;
             tasks.TaskDone = false;
             tasks.TaskEnd = DateTime.Parse("01.01.2050");
-            //OCTasksList = new ObservableCollection<Tasks>();
             OCTasksList.Add(tasks);
         }
 
