@@ -90,7 +90,10 @@
                         <Button 
                             Width="50" 
                             HorizontalAlignment="Right" 
-                            Click="ItemDoneClick">Done</Button>
+                            Click="ItemDoneClick">Done ☑</Button>
+                        <TextBlock FontSize="25">☐</TextBlock>
+                        <TextBlock FontSize="25">☑</TextBlock>
+                        <TextBlock FontSize="25">☒</TextBlock>
                     </DockPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>

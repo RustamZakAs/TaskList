@@ -1,25 +1,34 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Runtime;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Runtime;
-using System.Runtime.CompilerServices;
+using System.ComponentModel;
+using System.Windows.Controls;
+using System.Windows.Documents;
+using System.Xml.Serialization;
+using System.Windows.Navigation;
+using System.Collections.Generic;
+using System.Windows.Media.Imaging;
+using System.Runtime.Serialization;
 using System.Collections.ObjectModel;
+using System.Runtime.CompilerServices;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace TaskList
 {
+    [Serializable]
     public class Tasks : INotifyPropertyChanged
     {
+        // стандартный конструктор без параметров
+        public Tasks()
+        { }
+
         public event PropertyChangedEventHandler PropertyChanged;
         public void Set<T>(ref T field, T value, [System.Runtime.CompilerServices.CallerMemberName]string prop = "")
         {
@@ -77,6 +86,8 @@ namespace TaskList
             tasks.TaskDone = false;
             tasks.TaskEnd = DateTime.Parse("01.01.2050");
             OCTasksList.Add(tasks);
+
+            XmlDeSerialize();
         }
 
         private void MenuItemEdit_Click(object sender, RoutedEventArgs e)
@@ -90,7 +101,31 @@ namespace TaskList
 
         private void MenuItemExit_Click(object sender, RoutedEventArgs e)
         {
+            XmlSerialize();
             Environment.Exit(0);
+        }
+
+        void XmlSerialize ()
+        {
+            // передаем в конструктор тип класса
+            XmlSerializer formatter = new XmlSerializer(typeof(ObservableCollection<Tasks>));
+
+            // получаем поток, куда будем записывать сериализованный объект
+            using (FileStream fs = new FileStream("Tasks.xml", FileMode.OpenOrCreate))
+            {
+                formatter.Serialize(fs, OCTasksList);
+            }
+        }
+
+        void XmlDeSerialize()
+        {
+            // передаем в конструктор тип класса
+            XmlSerializer formatter = new XmlSerializer(typeof(ObservableCollection<Tasks>));
+            // десериализация
+            using (FileStream fs = new FileStream("Tasks.xml", FileMode.OpenOrCreate))
+            {
+                OCTasksList = (ObservableCollection<Tasks>)formatter.Deserialize(fs);
+            }
         }
 
         private void ItemDoneClick(object sender, RoutedEventArgs e)
@@ -102,7 +137,6 @@ namespace TaskList
             tasks.TaskStart = DateTime.Now;
             tasks.TaskDone = false;
             tasks.TaskEnd = DateTime.Parse("01.01.2050");
-            //OCTasksList = new ObservableCollection<Tasks>();
             OCTasksList.Add(tasks);
         }
 
