@@ -5,8 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TaskList"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="320" Name="mainWindow">
+        Title="MainWindow" Height="450" Width="320" Name="mainWindow" Closing="mainWindow_Closing">
     <Window.Resources>
+        <local:ColorToStringConverter x:Key="myColorConverter"/>
         <ControlTemplate x:Key="btnTemplate" 
                          TargetType="Button">
             <Border Name="btnBorder" 
@@ -15,21 +16,21 @@
                     CornerRadius="10"
                     BorderBrush="Black"
                     BorderThickness="2">
-            <TextBlock FontSize="{TemplateBinding FontSize}" 
+                <TextBlock FontSize="{TemplateBinding FontSize}" 
                        Foreground="White" 
                        TextAlignment="Center"
                        VerticalAlignment="Center"
-                       Text="{TemplateBinding Content}"></TextBlock>
+                       Text="{TemplateBinding Content}"/>
             </Border>
             <ControlTemplate.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter TargetName="btnBorder" Property="Background" Value="Green"></Setter>
+                    <Setter TargetName="btnBorder" Property="Background" Value="Green"/>
                 </Trigger>
                 <Trigger Property="IsPressed" Value="True">
-                    <Setter TargetName="btnBorder" Property="Background" Value="Blue"></Setter>
+                    <Setter TargetName="btnBorder" Property="Background" Value="Blue"/>
                 </Trigger>
                 <Trigger Property="IsEnabled" Value="False">
-                    <Setter TargetName="btnBorder" Property="Background" Value="Gray"></Setter>
+                    <Setter TargetName="btnBorder" Property="Background" Value="Gray"/>
                 </Trigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>
@@ -47,20 +48,20 @@
                        Foreground="{TemplateBinding Foreground}" 
                        TextAlignment="Center"
                        VerticalAlignment="Center"
-                       Text="{TemplateBinding Content}"></TextBlock>
+                       Text="{TemplateBinding Content}"/>
             </Border>
             <ControlTemplate.Triggers>
                 <Trigger Property="IsChecked" Value="True">
-                    <Setter TargetName="chkBorder" Property="Background" Value="Green"></Setter>
+                    <Setter TargetName="chkBorder" Property="Background" Value="Green"/>
                 </Trigger>
                 <Trigger Property="IsChecked" Value="False">
-                    <Setter TargetName="chkBorder" Property="Background" Value="Blue"></Setter>
+                    <Setter TargetName="chkBorder" Property="Background" Value="Blue"/>
                 </Trigger>
                 <Trigger Property="IsPressed" Value="True">
-                    <Setter TargetName="chkBorder" Property="Background" Value="Red"></Setter>
+                    <Setter TargetName="chkBorder" Property="Background" Value="Red"/>
                 </Trigger>
                 <Trigger Property="IsEnabled" Value="False">
-                    <Setter TargetName="chkBorder" Property="Background" Value="Gray"></Setter>
+                    <Setter TargetName="chkBorder" Property="Background" Value="Gray"/>
                 </Trigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>
@@ -85,27 +86,49 @@
             
             <ControlTemplate.Triggers>
                 <Trigger Property="IsChecked" Value="True">
-                    <Setter TargetName="block1" Property="Foreground" Value="Green"></Setter>
-                    <Setter TargetName="block1" Property="Text" Value="☑"></Setter>
+                    <Setter TargetName="block1" Property="Foreground" Value="Green"/>
+                    <Setter TargetName="block1" Property="Text" Value="☑"/>
                 </Trigger>
                 <Trigger Property="IsChecked" Value="False">
-                    <Setter TargetName="block1" Property="Foreground" Value="Blue"></Setter>
-                    <Setter TargetName="block1" Property="Text" Value="☐"></Setter>
+                    <Setter TargetName="block1" Property="Foreground" Value="Blue"/>
+                    <Setter TargetName="block1" Property="Text" Value="☐"/>
                 </Trigger>
                 <Trigger Property="IsPressed" Value="True">
-                    <Setter TargetName="block1" Property="Foreground" Value="Red"></Setter>
+                    <Setter TargetName="block1" Property="Foreground" Value="Red"/>
                 </Trigger>
                 <Trigger Property="IsEnabled" Value="False">
-                    <Setter TargetName="block1" Property="Foreground" Value="Gray"></Setter>
+                    <Setter TargetName="block1" Property="Foreground" Value="Gray"/>
                 </Trigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>
         
         <DataTemplate x:Key="lbItem">
             <DockPanel LastChildFill="True">
+                <DockPanel.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Приоритет">
+                            <MenuItem Header="Повысить" Click="PriorityUp">
+                                <MenuItem.Icon>
+                                    <TextBlock HorizontalAlignment="Center" 
+                                        FontWeight="Bold"
+                                        FontSize="15"
+                                        Text="↑"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Понизить" Click="PriorityDown">
+                                <MenuItem.Icon>
+                                    <TextBlock HorizontalAlignment="Center" 
+                                               FontWeight="Bold"
+                                               FontSize="15"
+                                               Text="↓"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                        </MenuItem>
+                    </ContextMenu>
+                </DockPanel.ContextMenu>
                 <Rectangle DockPanel.Dock="Left" 
                            Width="10" 
-                           Fill="{Binding TaskCategoryColor}">
+                           Fill="{Binding TaskCategoryColor, Converter={StaticResource myColorConverter}}">
                     <Rectangle.ContextMenu>
                         <ContextMenu>
                             <MenuItem Header="Red" Click="ClickCategoryColorChenged"/>
@@ -216,14 +239,7 @@
                  HorizontalContentAlignment="Stretch"
                  ItemsSource="{Binding OCTasksList}"
                  ItemTemplate="{StaticResource lbItem}">
-            <ListBox.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="Копировать"/>
-                    <MenuItem Header="Вставить"/>
-                    <MenuItem Header="Вырезать"/>
-                    <MenuItem Header="Удалить"/>
-                </ContextMenu>
-            </ListBox.ContextMenu>
+            
             <!--<ListBox.ItemTemplate>
                 <DataTemplate>
                     <DockPanel VerticalAlignment="Stretch" HorizontalAlignment="Right">
@@ -261,8 +277,8 @@
             </ListBox.ItemTemplate>-->
         </ListBox>
         <UniformGrid Grid.Column="0" Grid.Row="2" Margin="0,0,0,-19">
-            <Button Click="FontUpClick" Content="+"/>
-            <Button Click="FontDownClick" Content="-"/>
+            <Button Click="FontUpClick" Content="A+"/>
+            <Button Click="FontDownClick" Content="A-"/>
         </UniformGrid>
         <UniformGrid Grid.Column="1" Grid.Row="2">
             <Label HorizontalAlignment="Left" 

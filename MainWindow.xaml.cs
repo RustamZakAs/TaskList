@@ -8,6 +8,7 @@ using System.Windows;
 using System.Reflection;
 using System.Data.Entity;
 using System.Windows.Data;
+using System.Globalization;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -114,7 +115,14 @@ namespace TaskList
             // десериализация
             using (FileStream fs = new FileStream("MyTask.xml", FileMode.OpenOrCreate))
             {
-                OCTasksList = (ObservableCollection<MyTask>)formatter.Deserialize(fs);
+                try
+                {
+                    OCTasksList = (ObservableCollection<MyTask>)formatter.Deserialize(fs);
+                }
+                catch (InvalidOperationException ioe)
+                {
+                    MessageBox.Show(ioe.Message);
+                }
             }
         }
 
@@ -164,6 +172,38 @@ namespace TaskList
             tasks.TaskEnd = DateTime.Parse("01.01.2050");
             OCTasksList.Add(tasks);
         }
+
+        private void mainWindow_Closing(object sender, CancelEventArgs e)
+        {
+            MenuItemExit_Click(sender,null);
+        }
+
+        private void PriorityUp(object sender, RoutedEventArgs e)
+        {
+            if (listBox.SelectedIndex >= 0)
+                if (OCTasksList[listBox.SelectedIndex].TaskPriority < 99)
+                    OCTasksList[listBox.SelectedIndex].TaskPriority++;
+        }
+
+        private void PriorityDown(object sender, RoutedEventArgs e)
+        {
+            if (listBox.SelectedIndex >= 0)
+                if (OCTasksList[listBox.SelectedIndex].TaskPriority > 0)
+                    OCTasksList[listBox.SelectedIndex].TaskPriority--;
+        }
+    }
+
+    public class ColorToStringConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return ((Color)value).ToString();
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return DependencyProperty.UnsetValue;
+        }
     }
 }
 
@@ -197,3 +237,5 @@ public static class Colorss
     }
 }
 */
+
+
