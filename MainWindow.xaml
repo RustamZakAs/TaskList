@@ -5,7 +5,145 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TaskList"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="300" Name="mainWindow">
+        Title="MainWindow" Height="450" Width="320" Name="mainWindow">
+    <Window.Resources>
+        <ControlTemplate x:Key="btnTemplate" 
+                         TargetType="Button">
+            <Border Name="btnBorder" 
+                    Width="{TemplateBinding Width}"
+                    Background="Red"
+                    CornerRadius="10"
+                    BorderBrush="Black"
+                    BorderThickness="2">
+            <TextBlock FontSize="{TemplateBinding FontSize}" 
+                       Foreground="White" 
+                       TextAlignment="Center"
+                       VerticalAlignment="Center"
+                       Text="{TemplateBinding Content}"></TextBlock>
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter TargetName="btnBorder" Property="Background" Value="Green"></Setter>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter TargetName="btnBorder" Property="Background" Value="Blue"></Setter>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter TargetName="btnBorder" Property="Background" Value="Gray"></Setter>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+
+        <ControlTemplate x:Key="chkTemplateRound" 
+                         TargetType="CheckBox">
+            <Border Name="chkBorder" 
+                    Width="{TemplateBinding Width}"
+                    Background="{TemplateBinding Background}"
+                    Height="{TemplateBinding Height}"
+                    CornerRadius="10"
+                    BorderBrush="Black"
+                    BorderThickness="2">
+                <TextBlock FontSize="{TemplateBinding FontSize}" 
+                       Foreground="{TemplateBinding Foreground}" 
+                       TextAlignment="Center"
+                       VerticalAlignment="Center"
+                       Text="{TemplateBinding Content}"></TextBlock>
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsChecked" Value="True">
+                    <Setter TargetName="chkBorder" Property="Background" Value="Green"></Setter>
+                </Trigger>
+                <Trigger Property="IsChecked" Value="False">
+                    <Setter TargetName="chkBorder" Property="Background" Value="Blue"></Setter>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter TargetName="chkBorder" Property="Background" Value="Red"></Setter>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter TargetName="chkBorder" Property="Background" Value="Gray"></Setter>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+        
+        <ControlTemplate x:Key="chkTemplate" 
+                         TargetType="CheckBox">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Name="block1" 
+                           FontSize="{TemplateBinding FontSize}"
+                           FontStyle="Normal" 
+                           Foreground="{TemplateBinding Foreground}" 
+                           VerticalAlignment="Center"
+                           FontWeight="Bold"
+                           Text="☑"/>
+                <TextBlock Name="block2" 
+                           FontSize="{TemplateBinding FontSize}" 
+                           Foreground="{TemplateBinding Foreground}" 
+                           TextAlignment="Center"
+                           VerticalAlignment="Center"
+                           Text="{TemplateBinding Content}"/>
+            </StackPanel>
+            
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsChecked" Value="True">
+                    <Setter TargetName="block1" Property="Foreground" Value="Green"></Setter>
+                    <Setter TargetName="block1" Property="Text" Value="☑"></Setter>
+                </Trigger>
+                <Trigger Property="IsChecked" Value="False">
+                    <Setter TargetName="block1" Property="Foreground" Value="Blue"></Setter>
+                    <Setter TargetName="block1" Property="Text" Value="☐"></Setter>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter TargetName="block1" Property="Foreground" Value="Red"></Setter>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter TargetName="block1" Property="Foreground" Value="Gray"></Setter>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+        
+        <DataTemplate x:Key="lbItem">
+            <DockPanel LastChildFill="True">
+                <Rectangle DockPanel.Dock="Left" 
+                           Width="10" 
+                           Fill="{Binding TaskCategoryColor}">
+                    <Rectangle.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Red" Click="ClickCategoryColorChenged"/>
+                            <MenuItem Header="Blue" Click="ClickCategoryColorChenged"/>
+                            <MenuItem Header="Green" Click="ClickCategoryColorChenged"/>
+                            <MenuItem Header="Black" Click="ClickCategoryColorChenged"/>
+                        </ContextMenu>
+                    </Rectangle.ContextMenu>
+                </Rectangle>
+                <Button Name="itemButtonDelete"
+                        DockPanel.Dock="Right"
+                        FontSize="20"
+                        Width="20"
+                        Content="☒"
+                        Click="ItemDelete"/>
+                <Label DockPanel.Dock="Right"
+                       Content="{Binding TaskPriority}"/>
+                <CheckBox Name="itemLabelTaskDone"
+                          DockPanel.Dock="Right"
+                          FontSize="20"
+                          Template="{StaticResource chkTemplate}"
+                          IsChecked="{Binding TaskDone}"/>
+                <TextBox Name="itemTextBox"
+                         Background="Yellow"
+                         Text="{Binding TaskText}"
+                         Cursor="Pen">
+                </TextBox>
+            </DockPanel>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding TaskDone}"
+                             Value="True">
+                    <Setter TargetName="itemLabelTaskDone"
+                            Property="Foreground"
+                            Value="Green"/>
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+    </Window.Resources>
     <Grid ShowGridLines="False">
         <Grid.ColumnDefinitions>
             <ColumnDefinition></ColumnDefinition>
@@ -35,10 +173,15 @@
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
-            <MenuItem Header="Изменить" Click="MenuItemEdit_Click">
+            <MenuItem Header="Изменить">
                 <MenuItem.Icon>
                     <Image Height="20" HorizontalAlignment="Left" Source="Ms_Office_Excel_logo.ico"></Image>
                 </MenuItem.Icon>
+                <MenuItem Header="Добавить" Click="ItemAdd">
+                    <MenuItem.Icon>
+                        <Image></Image>
+                    </MenuItem.Icon>
+                </MenuItem>
                 <MenuItem Header="Копировать" >
                     <MenuItem.Icon>
                         <Image></Image>
@@ -70,40 +213,61 @@
                  Grid.ColumnSpan="2"
                  Grid.Column="0" 
                  Grid.Row="1"
-                 ItemsSource="{Binding OCTasksList}">
+                 HorizontalContentAlignment="Stretch"
+                 ItemsSource="{Binding OCTasksList}"
+                 ItemTemplate="{StaticResource lbItem}">
             <ListBox.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Копировать"></MenuItem>
-                    <MenuItem Header="Вставить"></MenuItem>
-                    <MenuItem Header="Вырезать"></MenuItem>
-                    <MenuItem Header="Удалить"></MenuItem>
+                    <MenuItem Header="Копировать"/>
+                    <MenuItem Header="Вставить"/>
+                    <MenuItem Header="Вырезать"/>
+                    <MenuItem Header="Удалить"/>
                 </ContextMenu>
             </ListBox.ContextMenu>
-            <ListBox.ItemTemplate>
+            <!--<ListBox.ItemTemplate>
                 <DataTemplate>
                     <DockPanel VerticalAlignment="Stretch" HorizontalAlignment="Right">
-                        <Rectangle Width="10" Fill="Green"></Rectangle>
+                        <Rectangle Width="10" Fill="{Binding TaskCategoryColor}">
+                            <Rectangle.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Red" Click="ClickCategoryColorChenged"/>
+                                    <MenuItem Header="Blue" Click="ClickCategoryColorChenged"/>
+                                    <MenuItem Header="Green" Click="ClickCategoryColorChenged"/>
+                                    <MenuItem Header="Black" Click="ClickCategoryColorChenged"/>
+                                </ContextMenu>
+                            </Rectangle.ContextMenu>
+                        </Rectangle>
                         <TextBox FontSize="{Binding ElementName=mainWindow, Path=SizeTop}" 
                              Width="150" 
                              HorizontalAlignment="Stretch" 
-                             Text="{Binding TaskText}"></TextBox>
-                        <Button 
-                            Width="50" 
-                            HorizontalAlignment="Right" 
-                            Click="ItemDoneClick">Done ☑</Button>
-                        <TextBlock FontSize="25">☐</TextBlock>
-                        <TextBlock FontSize="25">☑</TextBlock>
-                        <TextBlock FontSize="25">☒</TextBlock>
+                             Text="{Binding TaskText}"/>
+                        <Button Width="50" 
+                                HorizontalAlignment="Right" 
+                                Click="ItemDoneClick" 
+                                IsEnabled="True"
+                                Visibility="Collapsed"
+                                Content="Done ☑" 
+                                FontSize="20" 
+                                Template="{StaticResource btnTemplate}"/>
+                        <CheckBox FontSize="20" 
+                                  Template="{StaticResource chkTemplate}" 
+                                  Visibility="Visible"
+                                  Content=""/>
+                        <Button FontSize="20" Content="☐"/>
+                        <Button FontSize="20" Content="☑"/>
+                        <Button FontSize="20" Content="☒"/>
                     </DockPanel>
                 </DataTemplate>
-            </ListBox.ItemTemplate>
+            </ListBox.ItemTemplate>-->
         </ListBox>
-        <UniformGrid Height="37" Grid.Column="0" Grid.Row="2">
-            <Button Click="FontUpClick">+</Button>
-            <Button Click="FontDownClick">-</Button>
+        <UniformGrid Grid.Column="0" Grid.Row="2" Margin="0,0,0,-19">
+            <Button Click="FontUpClick" Content="+"/>
+            <Button Click="FontDownClick" Content="-"/>
         </UniformGrid>
         <UniformGrid Grid.Column="1" Grid.Row="2">
-            <Label HorizontalAlignment="Left" VerticalAlignment="Top" Content="{Binding TextTop}"></Label>
+            <Label HorizontalAlignment="Left" 
+                   VerticalAlignment="Top" 
+                   Content="{Binding ElementName=OCTasksList, Path=Count}"/>
         </UniformGrid>
     </Grid>
 </Window>

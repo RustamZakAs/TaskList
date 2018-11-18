@@ -1,9 +1,12 @@
 ﻿using System;
+using TaskList;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Runtime;
 using System.Windows;
+using System.Reflection;
+using System.Data.Entity;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -23,10 +26,10 @@ using System.Runtime.Serialization.Formatters.Binary;
 namespace TaskList
 {
     [Serializable]
-    public class Tasks : INotifyPropertyChanged
+    public class MyTask : INotifyPropertyChanged
     {
         // стандартный конструктор без параметров
-        public Tasks()
+        public MyTask()
         { }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -70,33 +73,20 @@ namespace TaskList
         private int sizeTop = 11;
         public int SizeTop { get => sizeTop; set => Set(ref sizeTop, value); }
 
-        private ObservableCollection<Tasks> tasksList = new ObservableCollection<Tasks>();
-        public ObservableCollection<Tasks> OCTasksList { get => tasksList; set => Set(ref tasksList, value); }
+        private ObservableCollection<MyTask> tasksList = new ObservableCollection<MyTask>();
+        public ObservableCollection<MyTask> OCTasksList { get => tasksList; set => Set(ref tasksList, value); }
 
         public MainWindow()
         {
             InitializeComponent();
             DataContext = this;
 
-            Tasks tasks = new Tasks();
-            tasks.TaskPriority = 99;
-            tasks.TaskCategoryColor = Colors.Black;
-            tasks.TaskText = "Test text";
-            tasks.TaskStart = DateTime.Now;
-            tasks.TaskDone = false;
-            tasks.TaskEnd = DateTime.Parse("01.01.2050");
-            OCTasksList.Add(tasks);
-
             XmlDeSerialize();
         }
 
         private void MenuItemEdit_Click(object sender, RoutedEventArgs e)
         {
-            MenuItem menuItem = (MenuItem)sender;
-            MessageBox.Show(menuItem.Header.ToString());
 
-            ListBoxItem listBox = new ListBoxItem();
-            listBox.Content = "text";
         }
 
         private void MenuItemExit_Click(object sender, RoutedEventArgs e)
@@ -108,10 +98,10 @@ namespace TaskList
         void XmlSerialize ()
         {
             // передаем в конструктор тип класса
-            XmlSerializer formatter = new XmlSerializer(typeof(ObservableCollection<Tasks>));
+            XmlSerializer formatter = new XmlSerializer(typeof(ObservableCollection<MyTask>));
 
             // получаем поток, куда будем записывать сериализованный объект
-            using (FileStream fs = new FileStream("Tasks.xml", FileMode.OpenOrCreate))
+            using (FileStream fs = new FileStream("MyTask.xml", FileMode.Create))
             {
                 formatter.Serialize(fs, OCTasksList);
             }
@@ -120,24 +110,17 @@ namespace TaskList
         void XmlDeSerialize()
         {
             // передаем в конструктор тип класса
-            XmlSerializer formatter = new XmlSerializer(typeof(ObservableCollection<Tasks>));
+            XmlSerializer formatter = new XmlSerializer(typeof(ObservableCollection<MyTask>));
             // десериализация
-            using (FileStream fs = new FileStream("Tasks.xml", FileMode.OpenOrCreate))
+            using (FileStream fs = new FileStream("MyTask.xml", FileMode.OpenOrCreate))
             {
-                OCTasksList = (ObservableCollection<Tasks>)formatter.Deserialize(fs);
+                OCTasksList = (ObservableCollection<MyTask>)formatter.Deserialize(fs);
             }
         }
 
         private void ItemDoneClick(object sender, RoutedEventArgs e)
         {
-            Tasks tasks = new Tasks();
-            tasks.TaskPriority = 99;
-            tasks.TaskCategoryColor = Colors.Black;
-            tasks.TaskText = "Test text";
-            tasks.TaskStart = DateTime.Now;
-            tasks.TaskDone = false;
-            tasks.TaskEnd = DateTime.Parse("01.01.2050");
-            OCTasksList.Add(tasks);
+            
         }
 
         private void FontUpClick(object sender, RoutedEventArgs e)
@@ -149,5 +132,68 @@ namespace TaskList
         {
             SizeTop--;
         }
+
+        private void ClickCategoryColorChenged(object sender, RoutedEventArgs e)
+        {
+            OCTasksList[listBox.SelectedIndex].TaskCategoryColor = FromName(((MenuItem)sender).Header.ToString());
+        }
+
+        public static Color FromName(String name)
+        {
+            var color_props = typeof(Colors).GetProperties();
+            foreach (var c in color_props)
+                if (name.Equals(c.Name, StringComparison.OrdinalIgnoreCase))
+                    return (Color)c.GetValue(new Color(), null);
+            return Colors.Transparent;
+        }
+
+        private void ItemDelete(object sender, RoutedEventArgs e)
+        {
+            if (listBox.SelectedIndex >= 0)
+                OCTasksList.Remove(OCTasksList[listBox.SelectedIndex]);
+        }
+
+        private void ItemAdd(object sender, RoutedEventArgs e)
+        {
+            MyTask tasks = new MyTask();
+            tasks.TaskPriority = 0;
+            tasks.TaskCategoryColor = Colors.Gray;
+            tasks.TaskText = "";
+            tasks.TaskStart = DateTime.Now;
+            tasks.TaskDone = false;
+            tasks.TaskEnd = DateTime.Parse("01.01.2050");
+            OCTasksList.Add(tasks);
+        }
     }
 }
+
+
+
+ 
+namespace SQLiteApp
+{
+    public class ApplicationContext : DbContext
+    {
+        public ApplicationContext() : base("DefaultConnection")
+        {
+        }
+        public DbSet<MyTask> MyTasks { get; set; }
+    }
+}
+/*
+public static class Colorss
+{
+    private static readonly Dictionary<string, Color> dictionary =
+        typeof(Color).GetProperties(BindingFlags.Public |
+                                    BindingFlags.Static)
+                     .Where(prop => prop.PropertyType == typeof(Color))
+                     .ToDictionary(prop => prop.Name,
+                                   prop => (Color)prop.GetValue(null, null));
+
+    public static Color FromName(string name)
+    {
+        // Adjust behaviour for lookup failure etc
+        return dictionary[name];
+    }
+}
+*/
