@@ -5,7 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TaskList"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="320" Name="mainWindow" Closing="mainWindow_Closing">
+        Title="MainWindow" 
+        Height="450" 
+        Width="320" 
+        Name="mainWindow" 
+        Closing="mainWindow_Closing">
     <Window.Resources>
         <local:ColorToStringConverter x:Key="myColorConverter"/>
         <ControlTemplate x:Key="btnTemplate" 
@@ -232,9 +236,9 @@
                 </MenuItem.Icon>
             </MenuItem>
         </Menu>
-        <ListBox Name="listBox" 
+        <ListBox Name="listBox"
                  Grid.ColumnSpan="2"
-                 Grid.Column="0" 
+                 Grid.Column="0"
                  Grid.Row="1"
                  HorizontalContentAlignment="Stretch"
                  ItemsSource="{Binding OCTasksList}"
